@@ -1,0 +1,155 @@
+erDiagram
+    %% Core User Management
+    User ||--o{ Playlist : "creates"
+    User ||--o{ Video : "owns"
+    User ||--o{ Flashcard : "generates"
+    User ||--o{ MindMap : "creates"
+    User ||--o{ Quiz : "takes"
+    User ||--o{ Resources : "accesses"
+    User ||--o{ Document : "uploads"
+    User ||--o{ UserActivity : "performs"
+    User ||--o{ DailyActivitySummary : "has"
+
+    %% Playlist and Video Relationships
+    Playlist ||--o{ Video : "contains"
+
+    %% Video Learning Resources
+    Video ||--o{ Flashcard : "generates"
+    Video ||--o{ MindMap : "produces"
+    Video ||--o{ Quiz : "has"
+    Video ||--o{ Resources : "provides"
+
+    %% User Entity
+    User {
+        uuid uuid PK "Primary identifier"
+        string email UK "Unique email address"
+        string first_name "User first name"
+        string last_name "User last name"
+        string username "Display username"
+        boolean is_active "Account status"
+        datetime created_at "Registration date"
+        datetime updated_at "Last modification"
+        string clerk_id UK "Clerk authentication ID"
+        boolean is_premium "Premium subscription status"
+        datetime premium_expires_at "Premium expiration date"
+        string subscription_id "Payment subscription ID"
+        datetime last_payment_date "Last payment timestamp"
+        string acquisition_source "User source tracking"
+        int videos_generated "Free tier video count"
+        int playlists_generated "Free tier playlist count"
+        datetime usage_reset_date "Usage counter reset date"
+        date last_active "Last activity date"
+        int current_streak "Current daily streak"
+        int max_streak "Maximum streak achieved"
+    }
+
+    %% Playlist Entity
+    Playlist {
+        int id PK
+        string playlist_id "YouTube playlist ID"
+        uuid uuid_playlist UK "Unique identifier"
+        string title "Playlist title"
+        string playlist_url "YouTube URL"
+        string playlist_thumbnail "Thumbnail image URL"
+        int user_id FK "Owner user ID"
+    }
+
+    %% Video Entity
+    Video {
+        int id PK
+        string video_id "YouTube video ID"
+        uuid uuid_video UK "Unique identifier"
+        string title "Video title"
+        string url "YouTube URL"
+        string thumbnail "Thumbnail image URL"
+        int duration_sec "Duration in seconds"
+        text summary "AI-generated summary"
+        text full_transcript "Complete transcript"
+        json timecode_transcript "Timestamped transcript"
+        int playlist_id FK "Parent playlist ID"
+        int user_id FK "Owner user ID"
+    }
+
+    %% Flashcard Entity
+    Flashcard {
+        int id PK
+        json flashcards_json "Flashcard data"
+        uuid uuid_flashcard UK "Unique identifier"
+        int user_id FK "Owner user ID"
+        int flashcard_video_id FK "Source video ID"
+    }
+
+    %% MindMap Entity
+    MindMap {
+        int id PK
+        json mindmap_json "Mind map structure"
+        uuid uuid_mindmap UK "Unique identifier"
+        int user_id FK "Owner user ID"
+        int mindmap_video_id FK "Source video ID"
+    }
+
+    %% Quiz Entity
+    Quiz {
+        int id PK
+        json quiz_json "Quiz questions data"
+        int questions_count "Total questions"
+        boolean is_completed "Completion status"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Last update timestamp"
+        float score_percentage "Final score percentage"
+        int correct_answers_count "Correct answers total"
+        json user_answers "User submitted answers"
+        json partial_answers "In-progress answers"
+        json ai_explanations "AI answer explanations"
+        json revealed_answers "Revealed answer tracking"
+        int answered_questions_count "Questions answered"
+        boolean has_partial_progress "Partial completion flag"
+        int quiz_video_id FK "Source video ID"
+        int user_id FK "Quiz taker ID"
+    }
+
+    %% Resources Entity
+    Resources {
+        int id PK
+        json resources_json "Learning resources data"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Last update timestamp"
+        int resources_video_id FK "Source video ID"
+        int user_id FK "Owner user ID"
+    }
+
+    %% Document Entity
+    Document {
+        int id PK
+        uuid document_uuid UK "Unique identifier"
+        string title "Document title"
+        string file "File storage path"
+        text extracted_text "Extracted content"
+        text summary_text "AI-generated summary"
+        int file_size "File size in bytes"
+        string file_type "MIME type"
+        datetime created_at "Upload timestamp"
+        datetime updated_at "Last modification"
+        int user_id FK "Owner user ID"
+    }
+
+    %% UserActivity Entity
+    UserActivity {
+        int id PK
+        date date "Activity date"
+        string activity_type "Type of activity"
+        int count "Activity count"
+        datetime created_at "Record timestamp"
+        int user_id FK "User ID"
+    }
+
+    %% DailyActivitySummary Entity
+    DailyActivitySummary {
+        int id PK
+        date date "Summary date"
+        int total_activities "Total activity count"
+        json activity_types "Activity breakdown"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Last update timestamp"
+        int user_id FK "User ID"
+    }
